@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Vendor {
+  id           Int         @id @default(autoincrement())
+  name         String
+  email        String      @unique
+  phone        String?
+  leadTimeDays Int         @default(7) @map("lead_time_days")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  items        Inventory[]
+
+  @@map("vendors")
+}
+
+model Inventory {
+  id                Int           @id @default(autoincrement())
+  itemName          String        @map("item_name")
+  category          String?
+  quantity          Int           @default(0)
+  minQuantity       Int           @default(10) @map("min_quantity")
+  unitPrice         Decimal?      @db.Decimal(10, 2) @map("unit_price")
+  warehouseLocation String?       @map("warehouse_location")
+  vendorId          Int?          @map("vendor_id")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+  vendor            Vendor?       @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+  transactions      Transaction[]
+  alerts            Alert[]
+  dailySales        DailySale[]
+
+  @@index([vendorId])
+  @@map("inventory")
+}
+
+model DailySale {
+  id           Int       @id @default(autoincrement())
+  inventoryId  Int       @map("inventory_id")
+  saleDate     DateTime  @map("sale_date") @db.Date
+  quantitySold Int       @default(0) @map("quantity_sold")
+  inventory    Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+
+  @@index([inventoryId])
+  @@map("daily_sales")
+}
+
+model Transaction {
+  id          Int       @id @default(autoincrement())
+  inventoryId Int       @map("inventory_id")
+  type        String
+  quantity    Int
+  notes       String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+
+  @@map("transactions")
+}
+
+model Alert {
+  id          Int       @id @default(autoincrement())
+  inventoryId Int       @map("inventory_id")
+  alertType   String    @map("alert_type")
+  message     String
+  resolved    Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+
+  @@map("alerts")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("staff")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}
