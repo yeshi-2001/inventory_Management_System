@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import useAnalytics from "../hooks/useAnalytics";
 import SummaryCards from "../components/SummaryCards";
 import AnalyticsTable from "../components/AnalyticsTable";
@@ -13,16 +14,23 @@ const PERIODS = [
 ];
 
 export default function Analytics() {
-  const [period,    setPeriod]    = useState("30");
-  const [startDate, setStartDate] = useState("");
-  const [endDate,   setEndDate]   = useState("");
+  const [searchParams] = useSearchParams();
+  const [period,    setPeriod]    = useState(searchParams.get("startDate") ? "custom" : "30");
+  const [startDate, setStartDate] = useState(searchParams.get("startDate") || "");
+  const [endDate,   setEndDate]   = useState(searchParams.get("endDate")   || "");
   const [search,    setSearch]    = useState("");
-  const [exporting, setExporting] = useState(null); // "csv" | "pdf" | null
+  const [exporting, setExporting] = useState(null);
 
   const { report, summary, chartData, loading, error, runReport, fetchSummary, fetchChartData, exportReport } = useAnalytics();
 
-  // Load summary cards on mount
   useEffect(() => { fetchSummary(); }, [fetchSummary]);
+
+  // Auto-run if navigated from billing history with pre-filled dates
+  useEffect(() => {
+    const sd = searchParams.get("startDate");
+    const ed = searchParams.get("endDate");
+    if (sd && ed) runReport("custom", sd, ed);
+  }, []); // eslint-disable-line
 
   const handleRun = () => {
     if (period === "custom" && (!startDate || !endDate)) {

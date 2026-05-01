@@ -34,6 +34,7 @@ model Inventory {
   transactions      Transaction[]
   alerts            Alert[]
   dailySales        DailySale[]
+  billItems         BillItem[]
 
   @@index([vendorId])
   @@map("inventory")
@@ -75,11 +76,98 @@ model Alert {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  passwordHash String   @map("password_hash")
-  role         String   @default("staff")
-  createdAt    DateTime @default(now()) @map("created_at")
+  id                Int                @id @default(autoincrement())
+  fullName          String             @map("full_name")
+  email             String             @unique
+  passwordHash      String             @map("password_hash")
+  role              String             @default("employee")  // "admin" | "employee"
+  isActive          Boolean            @default(true) @map("is_active")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  lastLogin         DateTime?          @map("last_login")
+  approvedVendors   VendorAccount[]    @relation("ApprovedBy")
+  reviewedOffers    VendorStockOffer[] @relation("ReviewedBy")
+  auditLogs         AuditLog[]
 
   @@map("users")
 }
+
+model VendorAccount {
+  id            Int                @id @default(autoincrement())
+  companyName   String             @map("company_name")
+  contactName   String             @map("contact_name")
+  email         String             @unique
+  passwordHash  String             @map("password_hash")
+  phone         String?
+  isActive      Boolean            @default(false) @map("is_active")
+  approvedById  Int?               @map("approved_by_id")
+  approvedAt    DateTime?          @map("approved_at")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  approvedBy    User?              @relation("ApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
+  offers        VendorStockOffer[]
+
+  @@map("vendor_accounts")
+}
+
+model VendorStockOffer {
+  id              Int            @id @default(autoincrement())
+  vendorAccountId Int            @map("vendor_account_id")
+  itemName        String         @map("item_name")
+  category        String?
+  unitPrice       Decimal        @db.Decimal(10, 2) @map("unit_price")
+  minOrderQty     Int            @map("min_order_qty")
+  leadTimeDays    Int            @map("lead_time_days")
+  notes           String?
+  status          String         @default("pending")  // "pending" | "accepted" | "rejected"
+  adminNotes      String?        @map("admin_notes")
+  reviewedById    Int?           @map("reviewed_by_id")
+  reviewedAt      DateTime?      @map("reviewed_at")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  vendorAccount   VendorAccount  @relation(fields: [vendorAccountId], references: [id], onDelete: Cascade)
+  reviewedBy      User?          @relation("ReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([vendorAccountId])
+  @@map("vendor_stock_offers")
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  action      String
+  performedBy Int      @map("performed_by")
+  targetId    Int      @map("target_id")
+  details     String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  user        User     @relation(fields: [performedBy], references: [id], onDelete: Cascade)
+
+  @@map("audit_logs")
+}
+
+model Bill {
+  id            Int        @id @default(autoincrement())
+  billNumber    String     @unique @map("bill_number")        // e.g. BILL-0001
+  customerEmail String     @map("customer_email")
+  customerName  String?    @map("customer_name")
+  total         Decimal    @db.Decimal(10, 2)
+  status        String     @default("paid")                  // "paid" | "cancelled"
+  createdAt     DateTime   @default(now()) @map("created_at")
+  items         BillItem[]
+
+  @@map("bills")
+}
+
+model BillItem {
+  id            Int        @id @default(autoincrement())
+  billId        Int        @map("bill_id")
+  inventoryId   Int?       @map("inventory_id")              // nullable: item may be deleted later
+  itemName      String     @map("item_name")                 // snapshot at time of sale
+  unitPrice     Decimal    @db.Decimal(10, 2) @map("unit_price") // snapshot at time of sale
+  quantity      Int
+  subtotal      Decimal    @db.Decimal(10, 2)
+  bill          Bill       @relation(fields: [billId], references: [id], onDelete: Cascade)
+  inventory     Inventory? @relation(fields: [inventoryId], references: [id], onDelete: SetNull)
+
+  @@index([billId])
+  @@index([inventoryId])
+  @@map("bill_items")
+}
+

@@ -33,7 +33,18 @@ router.get("/fast-movers", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const data = await db.getAllInventory();
+    const { search } = req.query;
+    const data = search
+      ? await db.prisma.inventory.findMany({
+          where: {
+            OR: [
+              { itemName: { contains: search, mode: "insensitive" } },
+              { category: { contains: search, mode: "insensitive" } },
+            ],
+          },
+          include: { vendor: true },
+        })
+      : await db.getAllInventory();
     res.json({ success: true, data });
   } catch (error) {
     res.status(500).json({ success: false, errors: [{ field: null, message: error.message }] });

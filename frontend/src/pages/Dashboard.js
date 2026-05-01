@@ -5,35 +5,42 @@ import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis,
   Tooltip, ResponsiveContainer, CartesianGrid,
 } from "recharts";
+import { formatLKR } from "../utils/currency";
+
+const BASE = process.env.REACT_APP_API_URL;
 
 export default function Dashboard() {
   const { data: inventory, loading } = useFetch(() => api.get("/inventory"));
-  const { data: alerts } = useFetch(() => api.get("/alerts"));
-  const { data: analytics } = useFetch(
+  const { data: alerts }             = useFetch(() => api.get("/alerts"));
+  const { data: analytics }          = useFetch(
     () => inventory ? getAnalytics(inventory) : Promise.resolve([]),
     [inventory]
+  );
+  const { data: summary }   = useFetch(() => api.get("/billing/summary"));
+  const { data: salesRows } = useFetch(() =>
+    fetch(`${BASE}/billing/daily-sales?days=7`)
+      .then((r) => r.json())
+      .then((j) => j.data || [])
   );
 
   if (loading) return <Spinner />;
   if (!inventory) return <Empty />;
 
   const lowCount = inventory.filter((i) => i.quantity <= i.minQuantity).length;
-  const deadCount = inventory.filter((i) => (i.dailySales || []).slice(-14).every((v) => v === 0)).length;
-  const urgent = analytics?.filter((a) => a.classification === "urgent") || [];
+  const urgent   = analytics?.filter((a) => a.classification === "urgent") || [];
 
   const top10 = [...inventory]
     .sort((a, b) => b.quantity - a.quantity)
     .slice(0, 10)
-    .map((i) => ({ name: i.itemName.slice(0, 12), quantity: i.quantity }));
+    .map((i) => ({ name: (i.itemName || "").slice(0, 12), quantity: i.quantity }));
 
-  // Last 7 days movement: sum dailySales across all items per day
+  // Build last-7-days chart — fill missing dates with 0
   const last7 = Array.from({ length: 7 }, (_, i) => {
-    const dayLabel = `Day ${i + 1}`;
-    const total = inventory.reduce((s, item) => {
-      const idx = (item.dailySales?.length || 0) - 7 + i;
-      return s + (item.dailySales?.[idx] || 0);
-    }, 0);
-    return { day: dayLabel, sales: total };
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    const dateStr = d.toISOString().split("T")[0];
+    const row = (salesRows || []).find((r) => r.date === dateStr);
+    return { day: `${d.getMonth() + 1}/${d.getDate()}`, sales: row ? Number(row.totalSold) : 0 };
   });
 
   return (
@@ -45,10 +52,14 @@ export default function Dashboard() {
       )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Total Items" value={inventory.length} color="blue" />
-        <StatCard label="Low Stock" value={lowCount} color="yellow" />
-        <StatCard label="Dead Stock" value={deadCount} color="gray" />
-        <StatCard label="Unresolved Alerts" value={alerts?.length ?? 0} color="red" />
+        <StatCard label="Total Items"       value={inventory.length}    color="blue"   />
+        <StatCard label="Low Stock"         value={lowCount}            color="yellow" />
+        <StatCard label="Unresolved Alerts" value={alerts?.length ?? 0} color="red"    />
+        <StatCard
+          label="Revenue Today"
+          value={summary ? formatLKR(summary.totalRevenue) : "—"}
+          color="blue"
+        />
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -72,7 +83,7 @@ export default function Dashboard() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="day" tick={{ fontSize: 11 }} />
               <YAxis />
-              <Tooltip />
+              <Tooltip formatter={(v) => [v, "Units sold"]} />
               <Line type="monotone" dataKey="sales" stroke="#10b981" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
