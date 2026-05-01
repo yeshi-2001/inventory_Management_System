@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --color-navy:   #093C5D;
+  --color-ocean:  #3B7597;
+  --color-teal:   #6FD1D7;
+  --color-mint:   #5DF8D8;
+  --color-bg:     #f0f9fb;
+  --color-card:   #ffffff;
+  --color-border: #e2f5f7;
+}
+
+/* Dark mode */
+.dark {
+  --color-bg:     #0a1628;
+  --color-card:   #0f2236;
+  --color-border: rgba(111,209,215,0.2);
+}
+
+* {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Global focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-teal);
+  outline-offset: 2px;
+}
+
+body {
+  background-color: var(--color-bg);
+}
+
+/* Skeleton pulse */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.skeleton {
+  background: rgba(111,209,215,0.2);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* Sidebar active indicator */
+.nav-active {
+  background: rgba(93,248,216,0.15);
+  border-left: 3px solid var(--color-mint);
+}
+.nav-inactive {
+  border-left: 3px solid transparent;
+}
+
+/* Card hover accent */
+.metric-card {
+  transition: border-color 150ms ease, all 150ms ease;
+  border: 1px solid var(--color-border);
+}
+.metric-card:hover {
+  border-color: var(--color-teal);
+}
+.metric-card::before {
+  content: '';
+  display: block;
+  height: 3px;
+  width: 100%;
+  background: transparent;
+  border-radius: 16px 16px 0 0;
+  transition: background 150ms ease;
+  margin-bottom: -3px;
+  position: relative;
+  top: 0;
+}
+.metric-card:hover::before {
+  background: var(--color-teal);
+}
+
+/* Quick action FAB */
+.fab-action {
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 150ms ease, opacity 150ms ease;
+}
+.fab-open .fab-action {
+  transform: scale(1);
+  opacity: 1;
+}
