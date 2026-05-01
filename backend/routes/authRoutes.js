@@ -62,6 +62,45 @@ router.post("/login", loginLimiter, async (req, res) => {
   }
 });
 
+// ─── POST /api/auth/register (admin & employee self-registration) ────────────
+router.post("/register", async (req, res) => {
+  try {
+    const { fullName, email, password, role } = req.body;
+
+    if (!fullName || !email || !password || !role)
+      return res.status(400).json({ success: false, error: "fullName, email, password and role are required" });
+
+    if (![ "admin", "employee"].includes(role))
+      return res.status(400).json({ success: false, error: "role must be admin or employee" });
+
+    if (!isStrongPassword(password))
+      return res.status(400).json({ success: false, error: "Password must be at least 8 characters with one uppercase letter and one number" });
+
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) return res.status(409).json({ success: false, error: "Email already registered" });
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const user = await prisma.user.create({
+      data: { fullName, email, passwordHash, role, isActive: true },
+      select: { id: true, fullName: true, email: true, role: true },
+    });
+
+    // Notify owner
+    await sendEmail(process.env.OWNER_EMAIL, `New ${role} registered: ${fullName}`, `
+      <p>A new ${role} account has been created:</p>
+      <ul>
+        <li><strong>Name:</strong> ${fullName}</li>
+        <li><strong>Email:</strong> ${email}</li>
+        <li><strong>Role:</strong> ${role}</li>
+      </ul>
+    `).catch(() => {});
+
+    res.status(201).json({ success: true, message: "Account created successfully. You can now log in.", data: user });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // ─── POST /api/auth/register-vendor ──────────────────────────────────────────
 router.post("/register-vendor", async (req, res) => {
   try {

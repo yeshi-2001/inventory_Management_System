@@ -7,6 +7,7 @@ import useAuth from "./hooks/useAuth";
 
 // Pages
 import LoginPage          from "./pages/LoginPage";
+import RegisterPage       from "./pages/RegisterPage";
 import VendorRegisterPage from "./pages/VendorRegisterPage";
 import Dashboard          from "./pages/Dashboard";
 import Inventory          from "./pages/Inventory";
@@ -37,7 +38,8 @@ function AppRoutes() {
       <Routes>
         {/* Public */}
         <Route path="/login"           element={<LoginPage />} />
-        <Route path="/register-vendor" element={<VendorRegisterPage />} />
+        <Route path="/register"        element={<RegisterPage />} />
+        <Route path="/register-vendor" element={<RegisterPage />} />
 
         {/* Admin only */}
         <Route path="/" element={<ProtectedRoute allowedRoles={["admin"]}><Dashboard /></ProtectedRoute>} />
@@ -54,8 +56,8 @@ function AppRoutes() {
         {/* Vendor only */}
         <Route path="/vendor/portal" element={<ProtectedRoute allowedRoles={["vendor"]}><VendorPortalPage /></ProtectedRoute>} />
 
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        {/* Default landing → register page */}
+        <Route path="*" element={<Navigate to="/register" replace />} />
       </Routes>
     </AppLayout>
   );

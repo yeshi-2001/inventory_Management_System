@@ -97,9 +97,13 @@ export default function LoginPage() {
         {role === "Vendor" && (
           <p className="text-center text-xs text-gray-500 mt-4">
             Don't have an account?{" "}
-            <Link to="/register-vendor" className="text-blue-600 hover:underline font-medium">Register as a vendor</Link>
+            <Link to="/register" className="text-blue-600 hover:underline font-medium">Register as a vendor</Link>
           </p>
         )}
+
+        <p className="text-center text-xs text-gray-400 mt-3">
+          <Link to="/register" className="hover:underline">← Back to registration page</Link>
+        </p>
       </div>
     </div>
   );

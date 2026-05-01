@@ -7,7 +7,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
 
   if (isLoading) return <div className="flex min-h-screen items-center justify-center"><Spinner /></div>;
 
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!isAuthenticated) return <Navigate to="/register" replace />;
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return (
