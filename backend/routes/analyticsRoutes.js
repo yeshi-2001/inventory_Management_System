@@ -182,8 +182,18 @@ router.get("/summary", async (req, res) => {
 });
 
 // ─── ROUTE 4: GET /api/analytics/export ──────────────────────────────────────
-
+// Supports token via query param for direct browser download links
 router.get("/export", async (req, res) => {
+  // Allow token from query string for direct download (browser can't set headers)
+  if (!req.user && req.query.token) {
+    try {
+      const { verifyToken } = require("../utils/jwt");
+      req.user = verifyToken(req.query.token);
+    } catch {
+      return res.status(401).json({ success: false, error: "Invalid token" });
+    }
+  }
+  if (!req.user) return res.status(401).json({ success: false, error: "No token provided" });
   try {
     const { period = "30", startDate, endDate, format = "csv" } = req.query;
 

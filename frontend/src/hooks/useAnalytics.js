@@ -22,8 +22,13 @@ export default function useAnalytics() {
     setError(null);
     try {
       const params = buildParams(period, startDate, endDate, itemId);
-      // Use raw fetch so we get the full response body (data + period + skipped)
-      const res  = await fetch(`${BASE}/analytics/stock-report?${params}`);
+      const token = localStorage.getItem("token");
+      const res  = await fetch(`${BASE}/analytics/stock-report?${params}`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
       const json = await res.json();
       if (!json.success) throw new Error(json.error || "Request failed");
       setReport(json.data || []);
@@ -50,8 +55,10 @@ export default function useAnalytics() {
   }, []);
 
   const exportReport = useCallback((period, startDate, endDate, format) => {
+    const token = localStorage.getItem("token");
     const params = new URLSearchParams({ period, format });
     if (period === "custom") { params.set("startDate", startDate); params.set("endDate", endDate); }
+    if (token) params.set("token", token);
     return `${BASE}/analytics/export?${params.toString()}`;
   }, []);
 
