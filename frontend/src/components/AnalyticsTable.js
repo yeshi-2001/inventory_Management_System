@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import ItemCharts from "./ItemCharts";
 
 const STATUS_BADGE = {
@@ -56,9 +56,8 @@ export default function AnalyticsTable({ items, chartData, onRowExpand, search }
         </thead>
         <tbody>
           {filtered.map((item) => (
-            <>
+            <Fragment key={item.inventoryId}>
               <tr
-                key={item.inventoryId}
                 onClick={() => toggle(item)}
                 className="border-b hover:bg-gray-50 cursor-pointer"
               >
@@ -87,7 +86,7 @@ export default function AnalyticsTable({ items, chartData, onRowExpand, search }
                 </td>
               </tr>
               {expanded === item.inventoryId && (
-                <tr key={`chart-${item.inventoryId}`}>
+                <tr>
                   <td colSpan={7} className="px-4 py-2">
                     <ItemCharts
                       inventoryId={item.inventoryId}
@@ -97,7 +96,7 @@ export default function AnalyticsTable({ items, chartData, onRowExpand, search }
                   </td>
                 </tr>
               )}
-            </>
+            </Fragment>
           ))}
         </tbody>
       </table>
