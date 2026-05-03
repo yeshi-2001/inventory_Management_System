@@ -97,9 +97,22 @@ router.put("/vendors/:id/approve", async (req, res) => {
     const vendor = await prisma.vendorAccount.update({
       where: { id },
       data: { isActive: true, approvedById: req.user.id, approvedAt: new Date() },
-      select: { id: true, companyName: true, email: true, isActive: true },
+      select: { id: true, companyName: true, email: true, phone: true, isActive: true },
     });
     await audit("VENDOR_APPROVED", req.user.id, id, `Vendor "${vendor.companyName}" approved`);
+
+    // Add to vendors table so they appear in inventory form dropdown
+    await prisma.vendor.upsert({
+      where: { email: vendor.email },
+      update: { name: vendor.companyName, phone: vendor.phone },
+      create: { name: vendor.companyName, email: vendor.email, phone: vendor.phone },
+    });
+
+    // Resolve the pending vendor_registration alert
+    await prisma.alert.updateMany({
+      where: { alertType: "vendor_registration", message: { contains: vendor.email }, resolved: false },
+      data: { resolved: true },
+    }).catch(() => {});
 
     await require("../utils/mailer").sendEmail(vendor.email, "Your vendor account has been approved", `
       <p>Your vendor account for <strong>${vendor.companyName}</strong> has been approved.</p>

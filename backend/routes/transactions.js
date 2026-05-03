@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 const { transactionRules, validate } = require("../middleware/validators");
+const { checkAndTriggerAlert } = require("../services/alertService");
 
 router.post("/", transactionRules, validate, async (req, res) => {
   try {
@@ -12,6 +13,10 @@ router.post("/", transactionRules, validate, async (req, res) => {
       quantity: Number(quantity),
       notes,
     });
+
+    // Check alert after any stock movement
+    checkAndTriggerAlert(Number(inventoryId)).catch(console.error);
+
     res.status(201).json({ success: true, data, message: "Transaction logged" });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

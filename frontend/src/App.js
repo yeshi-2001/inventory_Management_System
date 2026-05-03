@@ -4,7 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Sidebar from "./components/layout/Sidebar";
 import useAuth from "./hooks/useAuth";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import "./styles/theme.css";
 import { useFetch } from "./hooks/useFetch";
 import { api } from "./api";
@@ -27,7 +27,8 @@ import AdminUsersPage     from "./pages/AdminUsersPage";
 function AppLayout({ children }) {
   const { isAuthenticated, isLoading, user } = useAuth();
   const [darkMode, setDarkMode] = useState(false);
-  const { data: alerts } = useFetch(() => api.get("/alerts"));
+  const fetchAlerts = useCallback(() => isAuthenticated ? api.get("/alerts") : Promise.resolve([]), [isAuthenticated]);
+  const { data: alerts } = useFetch(fetchAlerts);
 
   if (isLoading) return null;
   if (!isAuthenticated) return children;
@@ -46,7 +47,7 @@ function AppRoutes() {
         {/* Public */}
         <Route path="/login"           element={<LoginPage />} />
         <Route path="/register"        element={<RegisterPage />} />
-        <Route path="/register-vendor" element={<RegisterPage />} />
+        <Route path="/register-vendor" element={<VendorRegisterPage />} />
 
         {/* Admin only */}
         <Route path="/" element={<ProtectedRoute allowedRoles={["admin"]}><DashboardPage /></ProtectedRoute>} />

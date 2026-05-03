@@ -2,7 +2,7 @@ import { useFetch } from "../../hooks/useFetch";
 import { useDateRange } from "../../context/DateRangeContext";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, Line, defs, linearGradient, stop,
+  Tooltip, ResponsiveContainer,
 } from "recharts";
 import SkeletonCard from "../ui/SkeletonCard";
 
@@ -16,7 +16,7 @@ const CustomTooltip = ({ active, payload, label }) => {
       <p className="font-medium mb-1">{label}</p>
       {payload.map((p) => (
         <p key={p.name} style={{ color: p.color }}>
-          {p.name}: {p.name === "Revenue" ? `Rs. ${Number(p.value).toLocaleString()}` : p.value}
+          {p.name}: {p.value}
         </p>
       ))}
     </div>
@@ -35,9 +35,8 @@ export default function RevenueChart() {
   );
 
   const chartData = (rows || []).map((r) => ({
-    date:    r.date?.slice(5),
-    Revenue: Number(r.totalRevenue || 0),
-    Bills:   Number(r.totalBills   || 0),
+    date:  r.date?.slice(5),
+    Units: Number(r.totalSold || 0),
   }));
 
   const PERIODS = [{ label: "7d", value: "7" }, { label: "30d", value: "30" }, { label: "90d", value: "90" }];
@@ -66,7 +65,7 @@ export default function RevenueChart() {
             <defs>
               <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%"   stopColor="#5DF8D8" stopOpacity={0.3} />
-                <stop offset="100%" stopColor="#5DF8D8" stopOpacity={0}   />
+                <stop offset="100%" stopColor="#5DF8D8" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-bg)" />
@@ -74,16 +73,10 @@ export default function RevenueChart() {
             <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
             <Tooltip content={<CustomTooltip />} />
             <Area
-              type="monotone" dataKey="Revenue"
+              type="monotone" dataKey="Units"
               stroke="var(--color-ocean)" strokeWidth={2}
               fill="url(#revenueGrad)"
               activeDot={{ fill: "var(--color-mint)", stroke: "var(--color-navy)", r: 5 }}
-            />
-            <Area
-              type="monotone" dataKey="Bills"
-              stroke="var(--color-teal)" strokeWidth={1.5}
-              strokeDasharray="4 4" fill="none"
-              activeDot={{ fill: "var(--color-teal)", r: 4 }}
             />
           </AreaChart>
         </ResponsiveContainer>

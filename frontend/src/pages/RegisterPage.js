@@ -44,7 +44,7 @@ const Field = ({ label, error, children }) => (
   </div>
 );
 
-const inputCls = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
+const inputCls = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none";
 
 // ─── Admin / Employee form ────────────────────────────────────────────────────
 function UserForm({ role, onSuccess }) {
@@ -92,7 +92,8 @@ function UserForm({ role, onSuccess }) {
       )}
 
       <button type="submit" disabled={isSubmitting}
-        className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2">
+        className="w-full text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+        style={{ background: "var(--color-navy)" }}>
         {isSubmitting && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
         {isSubmitting ? "Creating account..." : `Register as ${role}`}
       </button>
@@ -156,7 +157,8 @@ function VendorForm({ onSuccess }) {
       )}
 
       <button type="submit" disabled={isSubmitting}
-        className="w-full bg-green-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-2">
+        className="w-full text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+        style={{ background: "var(--color-navy)" }}>
         {isSubmitting && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
         {isSubmitting ? "Submitting..." : "Register as Vendor"}
       </button>
@@ -174,7 +176,7 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundImage: "url('/bg.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
         <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-8 text-center">
           <p className="text-5xl mb-4">{success === "vendor" ? "⏳" : "✅"}</p>
           <h2 className="text-lg font-semibold text-gray-800 mb-2">
@@ -187,9 +189,10 @@ export default function RegisterPage() {
           </p>
           <button
             onClick={() => navigate("/login")}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700"
+            className="w-full text-white py-2 rounded-lg text-sm font-medium"
+            style={{ background: "var(--color-navy)" }}
           >
-            Go to Login →
+            Go to Login
           </button>
         </div>
       </div>
@@ -197,13 +200,12 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8" style={{ backgroundImage: "url('/bg.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
       <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-8">
 
         {/* Header */}
         <div className="text-center mb-6">
-          <p className="text-4xl mb-2">📦</p>
-          <h1 className="text-xl font-bold text-gray-800">Create an Account</h1>
+          <h1 className="text-xl font-bold" style={{ color: "var(--color-navy)" }}>Create an Account</h1>
           <p className="text-xs text-gray-400 mt-0.5">Inventory Management System</p>
         </div>
 
@@ -213,9 +215,11 @@ export default function RegisterPage() {
             <button
               key={r}
               onClick={() => setRole(r)}
-              className={`flex-1 py-2 text-sm font-medium transition ${
-                role === r ? "bg-blue-600 text-white" : "bg-white text-gray-500 hover:bg-gray-50"
-              }`}
+              className="flex-1 py-2 text-sm font-medium transition"
+              style={role === r
+                ? { background: "var(--color-navy)", color: "#fff" }
+                : { background: "#fff", color: "var(--color-ocean)" }
+              }
             >
               {r}
             </button>
@@ -239,7 +243,7 @@ export default function RegisterPage() {
         <div className="mt-6 pt-4 border-t text-center">
           <p className="text-xs text-gray-500">
             Already have an account?{" "}
-            <Link to="/login" className="text-blue-600 hover:underline font-medium">Sign in here →</Link>
+            <Link to="/login" className="font-medium hover:underline" style={{ color: "var(--color-ocean)" }}>Sign in here</Link>
           </p>
         </div>
       </div>

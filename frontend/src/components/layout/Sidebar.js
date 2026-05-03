@@ -55,24 +55,27 @@ export default function Sidebar({ alertCount = 0, darkMode, onToggleDark }) {
   return (
     <aside
       className={`${w} min-h-screen flex flex-col transition-all duration-200 shrink-0`}
-      style={{ background: "var(--color-navy)", borderRight: "1px solid #0f4d75" }}
+      style={{
+        background: "linear-gradient(180deg, var(--color-navy) 0%, #0a4f6e 60%, var(--color-ocean) 100%)",
+        borderRight: "1px solid rgba(111,209,215,0.2)",
+      }}
     >
-      {/* Logo */}
-      <div className={`flex items-center gap-3 px-4 py-5 ${collapsed ? "justify-center" : ""}`}>
-        <WarehouseIcon />
-        {!collapsed && (
-          <span className="text-white font-semibold text-base tracking-wide">StockSense</span>
-        )}
+      {/* Logo + Collapse toggle */}
+      <div className={`flex items-center px-4 py-5 ${collapsed ? "justify-center" : "justify-between"}`}>
+        <div className="flex items-center gap-3">
+          <WarehouseIcon />
+          {!collapsed && (
+            <span className="text-white font-semibold text-base tracking-wide">StockSense</span>
+          )}
+        </div>
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex items-center justify-center w-7 h-7 rounded-full transition"
+          style={{ color: "var(--color-teal)", background: "rgba(111,209,215,0.1)" }}
+        >
+          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </button>
       </div>
-
-      {/* Collapse toggle */}
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className="mx-auto mb-4 flex items-center justify-center w-7 h-7 rounded-full transition"
-        style={{ color: "var(--color-teal)", background: "rgba(111,209,215,0.1)" }}
-      >
-        {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-      </button>
 
       {/* Nav */}
       <nav className="flex-1 flex flex-col gap-0.5 px-2">
@@ -83,10 +86,13 @@ export default function Sidebar({ alertCount = 0, darkMode, onToggleDark }) {
               key={to} to={to} end={to === "/"}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 relative
-                 ${isActive ? "nav-active text-white" : "nav-inactive text-white/65 hover:text-white"}
+                 ${isActive ? "nav-active text-white" : "nav-inactive hover:text-white"}
                  ${collapsed ? "justify-center" : ""}`
               }
-              style={({ isActive }) => isActive ? {} : {}}
+              style={({ isActive }) => isActive
+                ? { background: "linear-gradient(90deg, rgba(93,248,216,0.18), rgba(59,117,151,0.25))", borderLeft: "3px solid var(--color-mint)" }
+                : { color: "rgba(255,255,255,0.7)" }
+              }
             >
               {({ isActive }) => (
                 <>
@@ -110,20 +116,11 @@ export default function Sidebar({ alertCount = 0, darkMode, onToggleDark }) {
         })}
       </nav>
 
-      {/* Ocean theme indicator */}
-      {!collapsed && (
-        <div className="mx-3 mb-3 px-3 py-2 rounded-lg flex items-center gap-2"
-          style={{ background: "rgba(93,248,216,0.08)", border: "1px solid rgba(93,248,216,0.2)" }}>
-          <span className="w-2 h-2 rounded-full" style={{ background: "var(--color-mint)" }} />
-          <span className="text-xs" style={{ color: "var(--color-teal)" }}>Ocean theme</span>
-        </div>
-      )}
-
       {/* Dark mode toggle */}
       <button
         onClick={onToggleDark}
         className="mx-3 mb-3 flex items-center gap-2 px-3 py-2 rounded-lg transition"
-        style={{ color: "var(--color-teal)", background: "rgba(111,209,215,0.08)" }}
+        style={{ color: "var(--color-mint)", background: "rgba(93,248,216,0.08)", border: "1px solid rgba(93,248,216,0.15)" }}
       >
         {darkMode ? <Sun size={16} /> : <Moon size={16} />}
         {!collapsed && <span className="text-xs">{darkMode ? "Light mode" : "Dark mode"}</span>}
@@ -132,7 +129,7 @@ export default function Sidebar({ alertCount = 0, darkMode, onToggleDark }) {
       {/* User info */}
       <div
         className={`mx-2 mb-4 p-3 rounded-xl flex items-center gap-3 ${collapsed ? "justify-center" : ""}`}
-        style={{ background: "rgba(255,255,255,0.05)" }}
+        style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(111,209,215,0.15)" }}
       >
         <div
           className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"

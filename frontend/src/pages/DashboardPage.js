@@ -86,7 +86,13 @@ function QuickActionFAB() {
 function AdminDashboard() {
   return (
     <DateRangeProvider>
-      <div className="flex flex-col min-h-screen" style={{ background: "var(--color-bg)" }}>
+      <div className="flex flex-col min-h-screen" style={{
+        backgroundImage: "url('/bg.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}>
+        <div className="flex flex-col min-h-screen" style={{ background: "rgba(240,249,251,0.5)" }}>
         <TopBar title="Dashboard" />
 
         <div className="flex-1 p-6 space-y-6 max-w-[1400px] mx-auto w-full">
@@ -116,6 +122,7 @@ function AdminDashboard() {
         </div>
 
         <QuickActionFAB />
+        </div>
       </div>
     </DateRangeProvider>
   );

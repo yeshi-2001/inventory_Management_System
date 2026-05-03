@@ -115,9 +115,17 @@ router.post("/register-vendor", async (req, res) => {
     if (existing) return res.status(409).json({ success: false, error: "Email already registered" });
 
     const passwordHash = await bcrypt.hash(password, 12);
-    await prisma.vendorAccount.create({
+    const vendor = await prisma.vendorAccount.create({
       data: { companyName, contactName, email, passwordHash, phone, isActive: false },
     });
+
+    // In-app alert for admin
+    await prisma.alert.create({
+      data: {
+        alertType: "vendor_registration",
+        message: `New vendor registration pending approval: ${companyName} (${email})`,
+      },
+    }).catch(() => {});
 
     // Email to vendor
     await sendEmail(email, "Registration Received — Inventory Management System", `

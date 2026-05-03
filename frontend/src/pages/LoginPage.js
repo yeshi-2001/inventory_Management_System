@@ -32,24 +32,25 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundImage: "url('/bg.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
       <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-8">
         {/* Logo */}
         <div className="text-center mb-6">
-          <p className="text-3xl">📦</p>
-          <h1 className="text-xl font-bold text-gray-800 mt-1">Inventory WMS</h1>
+          <h1 className="text-xl font-bold mt-1" style={{ color: "var(--color-navy)" }}>Inventory WMS</h1>
           <p className="text-xs text-gray-400">Warehouse Management System</p>
         </div>
 
         {/* Role tabs */}
-        <div className="flex rounded-lg overflow-hidden border mb-6">
+        <div className="flex rounded-lg overflow-hidden border mb-6" style={{ borderColor: "var(--color-border)" }}>
           {ROLES.map((r) => (
             <button
               key={r}
               onClick={() => { setRole(r); setError(""); }}
-              className={`flex-1 py-2 text-sm font-medium transition ${
-                role === r ? "bg-blue-600 text-white" : "bg-white text-gray-500 hover:bg-gray-50"
-              }`}
+              className="flex-1 py-2 text-sm font-medium transition"
+              style={role === r
+                ? { background: "var(--color-navy)", color: "#fff" }
+                : { background: "#fff", color: "var(--color-ocean)" }
+              }
             >
               {r}
             </button>
@@ -62,7 +63,8 @@ export default function LoginPage() {
             <input
               type="email" required value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none"
+              style={{ borderColor: "var(--color-border)", outlineColor: "var(--color-teal)" }}
               placeholder="you@example.com"
             />
           </div>
@@ -73,11 +75,13 @@ export default function LoginPage() {
               <input
                 type={showPw ? "text" : "password"} required value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 text-sm pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border rounded-lg px-3 py-2 text-sm pr-10 focus:outline-none"
+                style={{ borderColor: "var(--color-border)" }}
                 placeholder="••••••••"
               />
               <button type="button" onClick={() => setShowPw(!showPw)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs"
+                style={{ color: "var(--color-ocean)" }}>
                 {showPw ? "Hide" : "Show"}
               </button>
             </div>
@@ -87,7 +91,8 @@ export default function LoginPage() {
 
           <button
             type="submit" disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full text-white py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+            style={{ background: "var(--color-navy)" }}
           >
             {loading && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
             {loading ? "Signing in..." : "Sign in"}
@@ -97,12 +102,12 @@ export default function LoginPage() {
         {role === "Vendor" && (
           <p className="text-center text-xs text-gray-500 mt-4">
             Don't have an account?{" "}
-            <Link to="/register" className="text-blue-600 hover:underline font-medium">Register as a vendor</Link>
+            <Link to="/register" className="font-medium hover:underline" style={{ color: "var(--color-ocean)" }}>Register as a vendor</Link>
           </p>
         )}
 
         <p className="text-center text-xs text-gray-400 mt-3">
-          <Link to="/register" className="hover:underline">← Back to registration page</Link>
+          <Link to="/register" className="hover:underline" style={{ color: "var(--color-ocean)" }}>Back to registration page</Link>
         </p>
       </div>
     </div>

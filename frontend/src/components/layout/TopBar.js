@@ -24,7 +24,7 @@ export default function TopBar({ title }) {
         style={{ background: "var(--color-card)", borderBottom: "1px solid #e2f5f7" }}
       >
         {/* Page title */}
-        <h1 className="text-xl font-medium mr-auto" style={{ color: "var(--color-navy)" }}>
+        <h1 className="text-2xl font-extrabold mr-auto" style={{ color: "var(--color-navy)" }}>
           {title}
         </h1>
 

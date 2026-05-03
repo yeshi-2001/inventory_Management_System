@@ -7,7 +7,9 @@ const handle = async (res) => {
   const json = await res.json();
   if (res.status === 401) {
     localStorage.removeItem("token");
-    window.location.href = "/register";
+    if (!window.location.pathname.includes("/login") && !window.location.pathname.includes("/register")) {
+      window.location.href = "/login";
+    }
     throw new Error("Session expired. Please log in again.");
   }
   if (!json.success) throw new Error(json.error || "Request failed");

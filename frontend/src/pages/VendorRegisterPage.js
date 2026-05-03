@@ -29,6 +29,8 @@ const Field = ({ label, error, children }) => (
   </div>
 );
 
+const inputCls = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none";
+
 export default function VendorRegisterPage() {
   const [success,     setSuccess]     = useState(false);
   const [serverError, setServerError] = useState("");
@@ -56,16 +58,17 @@ export default function VendorRegisterPage() {
   // ── Success screen ──────────────────────────────────────────────────────────
   if (success) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundImage: "url('/bg.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
         <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-8 text-center">
           <p className="text-5xl mb-4">✅</p>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">Registration Submitted!</h2>
+          <h2 className="text-lg font-semibold mb-2" style={{ color: "var(--color-navy)" }}>Registration Submitted!</h2>
           <p className="text-sm text-gray-500 mb-6">
             Your registration has been received. You will get an email once the admin approves your account.
           </p>
           <Link
             to="/login"
-            className="block w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 text-center"
+            className="block w-full text-white py-2 rounded-lg text-sm font-medium text-center"
+            style={{ background: "var(--color-navy)" }}
           >
             Go to Login
           </Link>
@@ -76,27 +79,28 @@ export default function VendorRegisterPage() {
 
   // ── Register form ───────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8" style={{ backgroundImage: "url('/bg.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
       <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-8">
 
         {/* Header */}
         <div className="text-center mb-6">
-          <p className="text-4xl mb-2">📦</p>
-          <h1 className="text-xl font-bold text-gray-800">Inventory WMS</h1>
+          <h1 className="text-xl font-bold" style={{ color: "var(--color-navy)" }}>Inventory WMS</h1>
           <p className="text-xs text-gray-400 mt-0.5">Warehouse Management System</p>
         </div>
 
-        {/* Already have account — prominent button */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 flex items-center justify-between">
+        {/* Already have account */}
+        <div className="rounded-xl p-4 mb-6 flex items-center justify-between"
+          style={{ background: "rgba(93,248,216,0.08)", border: "1px solid var(--color-border)" }}>
           <div>
-            <p className="text-sm font-medium text-blue-800">Already have an account?</p>
-            <p className="text-xs text-blue-500">Admin, Employee or Vendor</p>
+            <p className="text-sm font-medium" style={{ color: "var(--color-navy)" }}>Already have an account?</p>
+            <p className="text-xs" style={{ color: "var(--color-ocean)" }}>Admin, Employee or Vendor</p>
           </div>
           <Link
             to="/login"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 whitespace-nowrap"
+            className="text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap"
+            style={{ background: "var(--color-navy)" }}
           >
-            Sign In →
+            Sign In
           </Link>
         </div>
 
@@ -112,54 +116,27 @@ export default function VendorRegisterPage() {
         {/* Registration form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Field label="Company Name *" error={errors.companyName?.message}>
-            <input
-              {...register("companyName")}
-              placeholder="e.g. TechSupply Co."
-              className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <input {...register("companyName")} placeholder="e.g. TechSupply Co." className={inputCls} />
           </Field>
 
           <Field label="Contact Person Name *" error={errors.contactName?.message}>
-            <input
-              {...register("contactName")}
-              placeholder="e.g. John Silva"
-              className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <input {...register("contactName")} placeholder="e.g. John Silva" className={inputCls} />
           </Field>
 
           <Field label="Email *" error={errors.email?.message}>
-            <input
-              type="email"
-              {...register("email")}
-              placeholder="company@email.com"
-              className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <input type="email" {...register("email")} placeholder="company@email.com" className={inputCls} />
           </Field>
 
           <Field label="Phone (optional)" error={errors.phone?.message}>
-            <input
-              {...register("phone")}
-              placeholder="+94-77-1234567"
-              className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <input {...register("phone")} placeholder="+94-77-1234567" className={inputCls} />
           </Field>
 
           <div className="grid grid-cols-2 gap-3">
             <Field label="Password *" error={errors.password?.message}>
-              <input
-                type="password"
-                {...register("password")}
-                placeholder="Min 8 chars"
-                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <input type="password" {...register("password")} placeholder="Min 8 chars" className={inputCls} />
             </Field>
             <Field label="Confirm Password *" error={errors.confirmPassword?.message}>
-              <input
-                type="password"
-                {...register("confirmPassword")}
-                placeholder="Repeat password"
-                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <input type="password" {...register("confirmPassword")} placeholder="Repeat password" className={inputCls} />
             </Field>
           </div>
 
@@ -176,7 +153,8 @@ export default function VendorRegisterPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-green-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+            style={{ background: "var(--color-navy)" }}
           >
             {isSubmitting && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
             {isSubmitting ? "Submitting..." : "Register as Vendor"}
